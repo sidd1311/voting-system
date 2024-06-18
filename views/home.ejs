@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
+</head>
+
+<body>
+    <div class="container text-center mt-2">
+        <h1 class="alert alert-dark">Voting System</h1>
+        <h2 class="alert alert-warning">
+            <div id="timerContainer" style="margin-top: 20px;"></div>
+        </h2>
+
+        <form action="/vote" method="post">
+            <h4>Vote Your Favorite Candidate</h4>
+            <label for="user_phone">Enter Your Mobile to Begin (10 digits)</label>
+            <input type="text" class="form-control" name="user_phone" id="user_phone"
+                placeholder="Enter Your Phone Number" required>
+
+            <div class="row justify-content-center mt-3">
+                <div class="col-sm-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Candidate 1</h5>
+                            <input type="radio" name="candidate_id" value="1" id="candidate1">
+                            <!-- Radio button for candidate 1 -->
+                            <label for="candidate1">Rahul Gandhi</label>
+                            <p class="card-text">Vote for Rahul Gandhi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Candidate 2</h5>
+                            <input type="radio" name="candidate_id" value="2" id="candidate2">
+                            <!-- Radio button for candidate 2 -->
+                            <label for="candidate2">Narendra Modi</label>
+                            <p class="card-text">Vote for Narendra Modi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Candidate 3</h5>
+                            <input type="radio" name="candidate_id" value="3" id="candidate3">
+                            <!-- Radio button for candidate 3 -->
+                            <label for="candidate3">Doraemon</label>
+                            <p class="card-text">Vote for Doraemon</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="voteButton" onclick="validatePhoneNumber()">Vote</button>
+        </form>
+
+
+        <!-- Canvas for Chart.js -->
+
+        <canvas id="myChart" style="width:80%;max-width:300px"></canvas>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function displayTimer() {
+            var countdownDate = new Date(<%= disableButtonTimestamp %>);
+            var timerInterval = setInterval(function () {
+                var now = new Date().getTime();
+                var distance = countdownDate - now;
+
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('timerContainer').innerHTML = 'Time Left: ' + minutes + 'm ' + seconds + 's';
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('voteButton').disabled = true;
+                    document.getElementById('timerContainer').innerHTML = 'Voting button disabled.';
+                }
+            }, 1);
+        }
+
+        // Start the timer when the page loads
+        window.onload = function () {
+            displayTimer();
+        };
+
+        // Chart.js
+
+        const xValues = JSON.parse('<%- JSON.stringify(xVal) %>');
+        const yValues = JSON.parse('<%- JSON.stringify(yVal) %>');
+        const barColors = [ "blue", "green", "orange"];
+
+        new Chart("myChart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                }]
+            },
+        });
+
+        function validatePhoneNumber() {
+            var phoneNumber = document.getElementById('user_phone').value;
+            if (phoneNumber.length !== 10) {
+                alert("Please enter a 10-digit phone number.");
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+    </script>
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
